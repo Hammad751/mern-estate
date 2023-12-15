@@ -1,6 +1,7 @@
 import User from '../models/user.model.js'
 import bcryptjs from 'bcryptjs';
-// import { errorHandler } from '../utils/error.js';
+import { errorHandler } from '../utils/error.js';
+import jwt from 'jsonwebtoken';
 
 export const signup = async (req,res, next) =>{
     const { username, email, password } = req.body;
@@ -12,5 +13,34 @@ export const signup = async (req,res, next) =>{
         res.status(200).json("user data saved successfully");
     } catch (error) {
         next(error);
+    }
+}
+
+export const signin = async (req, res, next) => {
+    const { email, password } = req.body;
+
+    try {
+        const validUser = await User.findOne({email});
+        const validPassword = bcryptjs.compareSync(password, validUser.password);
+        // const param = req.params.email;
+        // console.log("param", param);
+        if(!validUser) return next(errorHandler(404, 'user not found'));
+        if(!validPassword) return next(errorHandler(401, 'wrong credentials'));
+
+        // to secure the users, we create the jsonwebtokens. this will generate the hashed values of users
+        // we create the hash against user-id as it is the best practice for doing this 
+        const token = await jwt.sign({id: validUser._id}, process.env.JWT_SECRET);
+
+        // make the password secure from throwing into the generated hash
+        const {password: pass, ...rest} = validUser._doc;
+        // after token creation, we use cookeis for users
+        // for making http true, it is used to secure user data from third party access
+        res
+        .cookie('access_token', token, {httpOnly: true})
+        .status(200)
+        .json(rest);
+        // console.log("token: ", token);
+    } catch (error) {
+        next(error)
     }
 }
