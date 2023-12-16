@@ -2,7 +2,9 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRouter from './routes/user.route.js';
-import authRouter from './routes/auth.route.js'
+import authRouter from './routes/auth.route.js';
+import cookieParser from "cookie-parser";
+
 dotenv.config();
 
 mongoose.connect(process.env.Mongo).then(() =>{
@@ -14,7 +16,9 @@ mongoose.connect(process.env.Mongo).then(() =>{
 const app = express();
 const port = 8080;
 
-app.use(express.json())
+app.use(express.json());
+app.use(cookieParser());
+
 app.listen(port, () =>{
     console.log(`server running on port http://localhost:${port}`);
 })

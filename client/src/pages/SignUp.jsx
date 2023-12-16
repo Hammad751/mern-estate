@@ -28,9 +28,9 @@ export default function SignUp() {
       // conver the data into string
       const data = await res.json();
       // console.log(data);
-      if(data.success == false){
-        setError(data.message);
+      if(data.success === false){
         setLoading(false);
+        setError(data.message);
         return;
       }
       setLoading(false);
@@ -40,7 +40,6 @@ export default function SignUp() {
       setLoading(false);
       setError(error.message);
     }
-    
   }
   return (
     <div className='p-3 max-w-lg mx-auto'>

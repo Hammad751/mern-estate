@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
-import { signinStart, signinSuccess, signinFailure } from '../redux/user/userSlice';
+import {signinStart, signinSuccess, signinFailure} from '../redux/user/userSlice';
 
 export default function SignIn() {
   const [formData, setFormData] = useState({});
-  const {loading, error} = useSelector((state) => { state.user });
+  const {loading, error} = useSelector((state) => state.user );
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
+  
   const handleChange = (e) =>{
     setFormData({
       ...formData, // we have to keep track the changes, so we use spread operator
@@ -35,8 +35,8 @@ export default function SignIn() {
         dispatch(signinFailure(data.message));
         return;
       }
-      dispatch(signinSuccess(data))
-      navigate('/')
+      dispatch(signinSuccess(data));
+      navigate('/');
     } catch (error) {
       dispatch(signinFailure(error.message));
     }
@@ -50,11 +50,16 @@ export default function SignIn() {
         <input type='email' placeholder='email' className='border p-3 rounded' id='email' onChange={handleChange} />
         <input type='password' placeholder='password' className='border p-3 rounded' id='password' onChange={handleChange} />
 
-        <button disabled={loading} className='bg-slate-600 text-white 
+        <button 
+        disabled={loading} 
+        className='bg-slate-600 text-white 
         p-3 rounded
         uppercase hover:opacity-95
         disabled:opacity-80'
-        >{loading ? "loading..." : "Sign In"}</button>
+        >
+          {loading ? "loading..." : "Sign In"}
+          {/* Signin   */}
+        </button>
       </form>
       <div className='flex gap-3'>
           <p>Dont have an account?</p>
