@@ -13,12 +13,12 @@ mongoose.connect(process.env.Mongo).then(() =>{
     console.log(error);
 });
 
-const app = express();
 const port = 8080;
 
+const app = express();
 app.use(express.json());
 app.use(cookieParser());
-
+ 
 app.listen(port, () =>{
     console.log(`server running on port http://localhost:${port}`);
 })
