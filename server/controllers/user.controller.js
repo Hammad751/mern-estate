@@ -35,4 +35,17 @@ export const updateUser = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+};
+
+export const deleteUser = async (req, res, next) => {
+    // req.user have the data getting from jwt
+    if(req.user.id !== req.params.id) return next(errorHandler(403, "you can delete your own account"));
+
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        // res.clearCookie('access_token');
+        res.clearCookie('access_token').status(200).json("user has been deleted!!!");   
+    } catch (error) {
+        next(error)
+    }
 }

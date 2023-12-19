@@ -2,7 +2,15 @@ import { useSelector, useDispatch } from "react-redux"
 import { useEffect, useRef, useState } from "react";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';
-import { updateUserStart, updateUserFailure, updateUserSuccess } from "../redux/user/userSlice";
+import { useNavigate } from 'react-router-dom'
+import { 
+  updateUserStart, 
+  updateUserFailure, 
+  updateUserSuccess,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure
+ } from "../redux/user/userSlice";
 
 export default function Profile() {
   const {currentUser, loading, error} = useSelector((state) => state.user);
@@ -12,6 +20,7 @@ export default function Profile() {
   const [uploadError, setUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   
   useEffect(()=>{
@@ -77,6 +86,26 @@ export default function Profile() {
     } catch (error) {
       dispatch(updateUserFailure(error.message))
     }
+  };
+
+  const handleDelete = async (e) =>{
+    // e.preventDefault();
+
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/server/user/delete/${currentUser._id}`, 
+      { method: 'DELETE', });
+      const data = await res.json();
+      if(data.success === false){
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+      navigate('/signup');
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
+
   }
 
   return (
@@ -118,7 +147,7 @@ export default function Profile() {
         <button className='bg-blue-500 text-white hover:opacity-90 uppercase disabled:opacity-70 rounded-lg p-3'>create listing</button>
       </form>
       <div className="flex justify-between mt-3">
-        <span className="text-red-500 cursor-pointer">Delete account</span>
+        <span onClick={handleDelete} className="text-red-500 cursor-pointer">Delete account</span>
         <span className="text-red-500 cursor-pointer">Sign out</span>
       </div>
       <p className="text-green-500">{updateSuccess && "updated successfully"}</p> 
