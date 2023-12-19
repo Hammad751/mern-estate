@@ -1,6 +1,63 @@
-import React from 'react'
+import { useState } from 'react';
+import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
+import {app} from '../firebase';
 
 export default function CreateListing() {
+    const [files, setFiles] = useState([]);
+    const [formData, setFormData] = useState({
+        imageURLs: []
+    });
+    const [imageUploadError, setImageUploadError] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    console.log("formData: ", formData);
+    const handleImageSubmit = (e) => {
+        if(files.length > 0 && files.length + formData.imageURLs.length < 3){
+            setUploading(true);
+            setImageUploadError(false);
+            const promises = [];
+            for(let i = 0; i < files.length; i++){
+                promises.push(storeImage(files[i]));
+            }
+
+            Promise.all(promises).then((urls)=>{
+                setFormData({...formData, imageURLs: formData.imageURLs.concat(urls)});
+                setImageUploadError(false);
+                setUploading(false);
+            }).catch((error) => { 
+                setImageUploadError('image upload failed (2 mb max)');
+                setUploading(false);
+            })
+        }
+        else{
+            setImageUploadError('you can upload only 6 images');
+            setUploading(false);
+        }
+    }
+    const storeImage = async (file) => {
+        return new Promise((res, rej) => {
+            const storage = getStorage(app);
+            const fileName = new Date().getTime() + file.name;
+            const storageRef = ref(storage, fileName);
+            const uploadTask = uploadBytesResumable(storageRef, file);
+
+            uploadTask.on('state_changed',
+            (snapshot)=>{},
+            (error)=> {rej(error)},
+            () => {
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL)=>{
+                    res(downloadURL);
+                });
+            }
+            );
+        })
+    }
+
+    const handleRemoveImage = (index) => {
+        setFormData({
+            ...formData,
+            imageURLs: formData.imageURLs.filter((_,i) => i !== index),
+        });
+    }
   return (
     <main className='p-3 max-w-4xl mx-auto'>
         <h1 className='text-3xl font-semibold text-center my-7'>Create a list</h1>
@@ -79,13 +136,28 @@ export default function CreateListing() {
                     <span className='font-normal text-gray-500 ml-2'>the first image will be the cover (masx 6)</span>
                 </p>
                 <div className='flex gap-4'>
-                    <input type='file' id='images' accept='image/*' className='p-3 border border-gray-400 rounded w-full' />
+                    <input onChange={(e) => setFiles(e.target.files)} type='file' id='images' accept='image/*' multiple className='p-3 border border-gray-400 rounded w-full' />
                     <button 
+                        disabled={uploading}
+                        type='button'
+                        onClick={handleImageSubmit}
                         className='px-3 uppercase border 
                         border-green-800 text-green-600 
                         rounded hover:shadow-lg disabled:opacity-80'
-                    >upload</button>
+                    >
+                        {uploading ? "uploading..." : "upload"}
+                    </button>
                 </div>
+                <p className='text-red-500 text-sm'>{imageUploadError && imageUploadError}</p>
+                {
+                    formData.imageURLs.length && formData.imageURLs.map((url, index)=>(
+                        <div key={index} className='flex justify-between items-center p-3 border border-gray-200 rounded-lg'>
+                            <img src={url} alt='image' className='w-20 h-20 boreder border-gray-200 rounded-lg object-contain' />
+                            <button onClick={() => handleRemoveImage(index)} type='button' className='uppercase text-red-500 rounded-lg hover:opacity-70' >delete</button>
+                        </div>
+                    ))
+                }
+
                 <button 
                     className='p-3 bg-slate-600 text-white rounded-lg
                     uppercase hover:opacity-95 disabled:opacity-80'>
