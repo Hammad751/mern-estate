@@ -11,7 +11,7 @@ export default function CreateListing() {
     const [uploading, setUploading] = useState(false);
     console.log("formData: ", formData);
     const handleImageSubmit = (e) => {
-        if(files.length > 0 && files.length + formData.imageURLs.length < 3){
+        if(files.length > 0 && files.length + formData.imageURLs.length < 7){
             setUploading(true);
             setImageUploadError(false);
             const promises = [];
@@ -20,7 +20,12 @@ export default function CreateListing() {
             }
 
             Promise.all(promises).then((urls)=>{
-                setFormData({...formData, imageURLs: formData.imageURLs.concat(urls)});
+                setFormData(
+                    {
+                        ...formData,
+                        imageURLs: formData.imageURLs.concat(urls)
+                    }
+                );
                 setImageUploadError(false);
                 setUploading(false);
             }).catch((error) => { 
@@ -136,7 +141,11 @@ export default function CreateListing() {
                     <span className='font-normal text-gray-500 ml-2'>the first image will be the cover (masx 6)</span>
                 </p>
                 <div className='flex gap-4'>
-                    <input onChange={(e) => setFiles(e.target.files)} type='file' id='images' accept='image/*' multiple className='p-3 border border-gray-400 rounded w-full' />
+                    <input 
+                        onChange={(e) => setFiles(e.target.files)} 
+                        type='file' id='images' accept='image/*' multiple 
+                        className='p-3 border border-gray-400 rounded w-full' 
+                    />
                     <button 
                         disabled={uploading}
                         type='button'
@@ -151,9 +160,13 @@ export default function CreateListing() {
                 <p className='text-red-500 text-sm'>{imageUploadError && imageUploadError}</p>
                 {
                     formData.imageURLs.length && formData.imageURLs.map((url, index)=>(
-                        <div key={index} className='flex justify-between items-center p-3 border border-gray-200 rounded-lg'>
+                        <div key={url} className='flex justify-between items-center p-3 border border-gray-200 rounded-lg'>
                             <img src={url} alt='image' className='w-20 h-20 boreder border-gray-200 rounded-lg object-contain' />
-                            <button onClick={() => handleRemoveImage(index)} type='button' className='uppercase text-red-500 rounded-lg hover:opacity-70' >delete</button>
+                            <button 
+                                onClick={() => handleRemoveImage(index)} 
+                                type='button' 
+                                className='uppercase text-red-500 rounded-lg hover:opacity-70' 
+                            >delete</button>
                         </div>
                     ))
                 }
