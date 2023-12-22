@@ -1,9 +1,11 @@
 import bcryptjs from "bcryptjs";
 import { errorHandler }  from "../utils/error.js"
 import User from '../models/user.model.js';
+import Listing from '../models/listing.model.js';
+
 
 export const test = (req,res) =>{
-    res.send("user controller file ")
+    res.send(" test API is working ")
 }
 
 //* to update a user, after signing in, 
@@ -47,5 +49,21 @@ export const deleteUser = async (req, res, next) => {
         res.clearCookie('access_token').status(200).json("user has been deleted!!!");   
     } catch (error) {
         next(error)
+    }
+}
+
+export const getUserListing = async (req, res, next)=>{
+    // user.id is getting from cookies
+    // params.id is getting from db
+    if(req.user.id === req.params.id) {
+        try {
+            const listings = await Listing.find({userRef: req.params.id});
+            res.status(200).json(listings);
+        } catch (error) {
+            next(error);
+        } 
+    }
+    else{
+        next(errorHandler(401, "you are not authenticated to view the list."));
     }
 }
