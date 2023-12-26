@@ -144,6 +144,37 @@ export default function Profile() {
     }
   }
 
+  const handleDeleteItem = async (userId)=> {
+    try {
+      const res = await fetch(`/server/listing/delete/${userId}`,{method: "DELETE"});
+
+      const data = await res.json();
+      if(data.success === false){
+        console.log(data.message);
+        return;
+      }
+      setUserList((prev) => prev.filter((listing)=> listing._id !== userId));
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
+  // const handleDeleteItem = aysnc (userId) => {
+  //   try {
+  //     const res = await fetch(`/server/listing/delete/${userId}`,
+  //     {method: "DELETE"});
+
+  //     const data = await res.json();
+  //     if(data.success === false){
+  //       console.log(data.message);
+  //       return;
+  //     }
+  //     setUserList((prev) => prev.filter((listing)=>listing._id !== userId));
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // }
+
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -215,7 +246,7 @@ export default function Profile() {
                 </Link>
 
                 <div className="flex flex-col gap-2">
-                  <button className="text-red-500 hover:opacity-75 uppercase">Delete</button>
+                  <button onClick={()=>handleDeleteItem(userListing._id)} className="text-red-500 hover:opacity-75 uppercase">Delete</button>
                   <button className="text-blue-500 hover:opacity-75 uppercase">edit</button>
                 </div>
               </div>

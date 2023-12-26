@@ -32,7 +32,7 @@ export const signin = async (req, res, next) => {
         const token = await jwt.sign({id: validUser._id}, process.env.JWT_SECRET);
         
         // make the password secure from throwing into the generated hash
-        const {password: pass, ...rest} = validUser._doc;
+        // const {password: pass, ...rest} = validUser._doc;
         
         // after token creation, we use cookeis for users
         // for making http true, it is used to secure user data from third party access
@@ -44,7 +44,8 @@ export const signin = async (req, res, next) => {
             // maxAge: time
         })
         .status(200)
-        .json(rest);
+        .json({token});
+        // .json({rest,token});
     } catch (error) {
         next(error)
     }

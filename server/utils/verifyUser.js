@@ -14,3 +14,16 @@ export const verifyToken = (req, res, next) => {
     })
 
 }
+
+export const checkUserId = (req, res, next) => {
+    try {
+        if(req.user._id === req.params.id) {
+            return next()
+        }
+        else{
+            return next(errorHandler(403, "unauthorized user"))
+        };
+    } catch (error) {
+        next(error)
+    }
+}
