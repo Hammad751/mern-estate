@@ -132,7 +132,7 @@ export default function Profile() {
   const handleShowListing = async ()=>{
     try {
       setListingError(false);
-      const res = await fetch(`/server/user/listing/${currentUser._id}`,{method: 'GET'});
+      const res = await fetch(`/server/user/listing/${currentUser.rest._id}`,{method: 'GET'});
       const data = await res.json();
       if(data.success === false){
         setListingError(true);
@@ -158,22 +158,6 @@ export default function Profile() {
       console.log(error.message);
     }
   }
-
-  // const handleDeleteItem = aysnc (userId) => {
-  //   try {
-  //     const res = await fetch(`/server/listing/delete/${userId}`,
-  //     {method: "DELETE"});
-
-  //     const data = await res.json();
-  //     if(data.success === false){
-  //       console.log(data.message);
-  //       return;
-  //     }
-  //     setUserList((prev) => prev.filter((listing)=>listing._id !== userId));
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // }
 
   return (
     <div className="p-3 max-w-lg mx-auto">

@@ -121,24 +121,26 @@ export default function CreateListing() {
             if(+formData.regularPrice < +formData.discountPrice) return setError("discount must be less than regular price")
             setLoading(true);
             setError(false);
+
             const res = await fetch('/server/listing/createlisting',{
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                
                 body: JSON.stringify({
                     ...formData,
-                    userRef: currentUser._id
+                    userRef: currentUser.rest._id
                 })
             });
-            const data = res.json();
+            const data = await res.json();
             setLoading(false);
 
             if(data.success === false){
                 setError(data.message);
                 return;
             }
-            navigate(`/lisiting/${data._id}`);
+            navigate(`/listing/${data._id}`);
         } catch (error) {
             setError(true);
             setLoading(false);
