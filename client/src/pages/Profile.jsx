@@ -231,7 +231,9 @@ export default function Profile() {
 
                 <div className="flex flex-col gap-2">
                   <button onClick={()=>handleDeleteItem(userListing._id)} className="text-red-500 hover:opacity-75 uppercase">Delete</button>
-                  <button className="text-blue-500 hover:opacity-75 uppercase">edit</button>
+                  <Link to={`/updatelisting/${userListing._id}`}>
+                    <button className="text-blue-500 hover:opacity-75 uppercase">edit</button>
+                  </Link>
                 </div>
               </div>
             )
