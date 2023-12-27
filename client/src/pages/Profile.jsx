@@ -171,7 +171,7 @@ export default function Profile() {
         />
         <img 
           onClick={() => fileRef.current.click()}
-          src={formData.avatar || currentUser.avatar} 
+          src={formData.avatar || currentUser.rest.avatar} 
           alt="profile"
           className="rounded-full h-20 w-20 
           object-cover cursor-pointer 
